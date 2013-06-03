@@ -15,7 +15,7 @@ url = Addressable::URI.new(
 
 puts url
 
-url = "http://maps.googleapis.com/maps/api/geocode/json?address=160+folsom+street,+san+francisco&sensor=true"
+# url = "http://maps.googleapis.com/maps/api/geocode/json?address=160+folsom+street,+san+francisco&sensor=true"
 response = RestClient.get(url)
 json = JSON.parse(response)
 lat = json["results"][0]["geometry"]["location"]["lat"]
