@@ -91,11 +91,5 @@ end
 token_file = "token.yml"
 session = TwitterSession.new
 session.set_token(token_file)
-# session.request_access_token
-# timeline = session.user_timeline
-# timeline.each do |tweet|
-#   puts tweet["text"]
-# end
-
 tweets = session.tweets
 p tweets
