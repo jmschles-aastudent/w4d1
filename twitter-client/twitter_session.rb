@@ -1,6 +1,8 @@
 require 'launchy'
 require 'oauth'
 require 'yaml'
+require 'json'
+require 'rest-client'
 
 # "consumer" in OAuth terminology means "client" in our discussion.
 
@@ -50,10 +52,25 @@ class TwitterSession
 
   # fetch a user's timeline
   def user_timeline #(access_token)
-    # the access token class has methods `get` and `post` to make
-    # requests in the same way as RestClient, except that these will be
-    # authorized. The token takes care of the crypto for us :-)
-    access_token.get("http://api.twitter.com/1.1/statuses/user_timeline.json").body
+    url = Addressable::URI.new(
+       :scheme => "http",
+       :host => "api.twitter.com",
+       :path => "1.1/statuses/user_timeline.json"
+       ).to_s
+
+    raw_json = access_token.get(url).body
+    json = JSON.parse(raw_json)
+    json
+  end
+
+  def tweets
+    timeline = user_timeline
+    tweets = []
+    # timeline = session.user_timeline
+    timeline.each do |tweet|
+      tweets << tweet["text"]
+    end
+    tweets
   end
 
   def set_token(token_file)
@@ -71,8 +88,14 @@ class TwitterSession
 
 end
 
-token_file = "token"
+token_file = "token.yml"
 session = TwitterSession.new
 session.set_token(token_file)
 # session.request_access_token
-p session.user_timeline
+# timeline = session.user_timeline
+# timeline.each do |tweet|
+#   puts tweet["text"]
+# end
+
+tweets = session.tweets
+p tweets
