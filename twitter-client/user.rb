@@ -105,31 +105,31 @@ class User
     usernames
   end
 
-  def post
-    puts "Input your tweet:"
+  def get_and_post
+    print "Input your tweet: "
     status_text = gets.chomp
+    post(status_text)
+  end
 
-    # https://api.twitter.com/1.1/statuses/update.json
+  def post(status)
     url = Addressable::URI.new(
       :scheme => "https",
       :host => "api.twitter.com",
       :path => "1.1/statuses/update.json",
       :query_values => {
-        :status => status_text
+        :status => status
         }).to_s
 
-    p session.access_token
-    p session.access_token.methods.sort
     response = session.access_token.post(url)
-    p response
+    p response.response.code
   end
 
 end
 
 sean = User.new("seanomlor")
 sean.set_access_token
-# puts sean.followers_list
+puts sean.check_access_token
+p sean.followers_list
 # p sean.followers_list
-# p sean.check_access_token
 # sean.follower_names
-sean.post
+sean.get_and_post
