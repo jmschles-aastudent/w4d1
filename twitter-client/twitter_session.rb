@@ -4,11 +4,10 @@ require 'yaml'
 require 'json'
 require 'rest-client'
 
-# "consumer" in OAuth terminology means "client" in our discussion.
-
 class TwitterSession
-  CONSUMER_KEY = "iEF943evwJMAHlTsfaf1ew"
-  CONSUMER_SECRET = "6k7kA6mqBrCqkc5i6bvuzONdBEtuhErssENw7FnXXbw"
+  config = YAML::load( File.open('config.yml'))
+  CONSUMER_KEY = config["consumer_key"]
+  CONSUMER_SECRET = config["consumer_secret"]
   CONSUMER = OAuth::Consumer.new(
     CONSUMER_KEY, CONSUMER_SECRET, :site => "https://twitter.com")
 
