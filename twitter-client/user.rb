@@ -26,8 +26,7 @@ class User
     session.access_token.get(url).response.code
   end
 
-  # fetch a user's timeline
-  def timeline #(access_token)
+  def timeline
     url = Addressable::URI.new(
        :scheme => "http",
        :host => "api.twitter.com",
@@ -47,22 +46,7 @@ class User
     tweets
   end
 
-  def followers_ids(for_username = username)
-    url = Addressable::URI.new(
-    :scheme => "https",
-    :host => "api.twitter.com",
-    :path => "1.1/followers/ids.json",
-    :query_values => {
-      :screen_name => for_username,
-      :count => 5000
-      }).to_s
-
-    raw_json = session.access_token.get(url).body
-    json = JSON.parse(raw_json)
-    json
-  end
-
-  def followers_list(for_username = username)
+  def followers(for_username = username)
     followers_list = []
     cursor = -1
     until cursor.zero?
@@ -77,20 +61,19 @@ class User
         :cursor => cursor
       }).to_s
 
-      # puts session.access_token
-      # p session.access_token.get(url).header
-      # break
-      raw_json = session.access_token.get(url).body
-      json = JSON.parse(raw_json)
+      response = session.access_token.get(url)
+      json = JSON.parse(response.body)
 
-      puts cursor
-      # puts json
       users = json["users"]
-      users.each do |user|
-        followers_list << user["screen_name"]
+      if users.nil?
+        p response.response
+        return
+      else
+        users.each do |user|
+          followers_list << user["screen_name"]
+        end
+        cursor = json["next_cursor"]
       end
-
-      cursor = json["next_cursor"]
     end
     followers_list
   end
@@ -103,6 +86,38 @@ class User
       usernames << user["screen_name"]
     end
     usernames
+  end
+
+  def friends(for_username = username)
+    friends_list = []
+    cursor = -1
+    until cursor.zero?
+      url = Addressable::URI.new(
+      :scheme => "https",
+      :host => "api.twitter.com",
+      :path => "1.1/friends/list.json",
+      :query_values => {
+        :screen_name => for_username,
+        :skip_status => true,
+        :include_user_entities => false,
+        :cursor => cursor
+      }).to_s
+
+      response = session.access_token.get(url)
+      json = JSON.parse(response.body)
+
+      users = json["users"]
+      if users.nil?
+        p response.response
+        return
+      else
+        users.each do |user|
+          friends_list << user["screen_name"]
+        end
+        cursor = json["next_cursor"]
+      end
+    end
+    friends_list
   end
 
   def get_and_post
@@ -128,8 +143,15 @@ end
 
 sean = User.new("seanomlor")
 sean.set_access_token
-puts sean.check_access_token
-p sean.followers_list
-# p sean.followers_list
-# sean.follower_names
-sean.get_and_post
+
+puts "check_access_token:"
+p sean.check_access_token
+
+# puts "followers:"
+# p sean.followers
+
+# puts "get_and_post:"
+# sean.get_and_post
+
+puts "friends:"
+p sean.friends
