@@ -1,12 +1,14 @@
 require 'addressable/uri'
 require 'json'
-require 'rest-client'
 require 'nokogiri'
+require 'rest-client'
+require 'yaml'
 
 class IceCreamFinder
   attr_reader :origin
 
-  API_KEY = "AIzaSyDMrQnUwbtDMoyZZjyfrup6tRX6Gx-3pQs"
+  config = YAML::load(File.open('config.yml'))
+  API_KEY = config["api_key"]
   KEYWORD = "ice cream"
   TYPE = "food"
 

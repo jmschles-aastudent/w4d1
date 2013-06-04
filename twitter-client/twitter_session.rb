@@ -1,11 +1,11 @@
 require 'launchy'
-require 'oauth'
-require 'yaml'
 require 'json'
+require 'oauth'
 require 'rest-client'
+require 'yaml'
 
 class TwitterSession
-  config = YAML::load( File.open('config.yml'))
+  config = YAML::load(File.open('config.yml'))
   CONSUMER_KEY = config["consumer_key"]
   CONSUMER_SECRET = config["consumer_secret"]
   CONSUMER = OAuth::Consumer.new(
